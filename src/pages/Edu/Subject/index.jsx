@@ -1,41 +1,46 @@
 import React, { Component } from "react";
-
-import { Table, Button } from "antd";
-
+import { Button, Table } from "antd";
 import { PlusOutlined, FormOutlined, DeleteOutlined } from "@ant-design/icons";
+import { connect } from "react-redux";
 
 import "./index.less";
-import { reqGetSubjectList } from "@api/edu/subject";
+import { getSubjectList, getSubSubjectList } from "./redux";
 
-export default class Subject extends Component {
+@connect((state) => ({ subjectList: state.subjectList }), {
+  getSubjectList,
+  getSubSubjectList,
+})
+class Subject extends Component {
   state = {
-    subjects: {
-      total: 0,
-      items: [],
-    },
-    page: 1,
-    limit: 10,
+    expandedRowKeys: [],
   };
-
   componentDidMount() {
-    this.getSubjectList(1, 10);
+    this.props.getSubjectList(1, 10);
   }
 
-  getSubjectList = async (page, limit) => {
-    const result = await reqGetSubjectList(page, limit);
+  // handleExpand = (expanded, record) => {
+  //   // console.log(expanded, record);
+  //   if (!expanded) return;
+  //   this.props.getSubSubjectList(record._id);
+  // };
+  handleExpandedRowsChange = (expandedRowKeys) => {
+    const length = expandedRowKeys.length;
+    if (length > this.state.expandedRowKeys.length) {
+      this.props.getSubSubjectList(expandedRowKeys[length - 1]);
+    }
+
     this.setState({
-      subjects: {
-        total: result.total,
-        items: result.items,
-      },
-      page,
-      limit,
+      expandedRowKeys,
     });
   };
 
-  render() {
-    const { subjects, page, limit } = this.state;
+  showAddSubject = () => {
+    this.props.history.push("/edu/subject/add");
+  };
 
+  render() {
+    const { subjectList, getSubjectList } = this.props;
+    const { expandedRowKeys } = this.state;
     const columns = [
       { title: "分类名称", dataIndex: "title", key: "title" },
       {
@@ -58,34 +63,55 @@ export default class Subject extends Component {
 
     return (
       <div className="subject">
-        <Button type="primary" className="subject-btn">
+        <Button
+          type="primary"
+          className="subject-btn"
+          onClick={this.showAddSubject}
+        >
           <PlusOutlined />
-          新建
+          新增
         </Button>
         <Table
           columns={columns}
           expandable={{
-            expandedRowRender: (record) => (
-              <p style={{ margin: 0 }}>{record.description}</p>
-            ),
-            rowExpandable: (record) => record.name !== "Not Expandable",
+            /*  expandedRowRender: (record) => {
+              const children = record.children ? record.children : [];
+              return children.map((subSubject) => {
+                return (
+                  <div key={subSubject._id}>
+                    <div>{subSubject.title}</div>
+                    <div>
+                      <Button type="primary">
+                        <FormOutlined />
+                      </Button>
+                      <Button type="danger" className="subject-btn">
+                        <DeleteOutlined />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              });
+            },
+            onExpand: this.handleExpand, */
+
+            expandedRowKeys,
+            onExpandedRowsChange: this.handleExpandedRowsChange,
           }}
-          dataSource={subjects.items}
           rowKey="_id"
+          dataSource={subjectList.items}
           pagination={{
-            defaultCurrent: 3,
-            total: subjects.total,
-            // defaultPageSize: 10,
-            pageSizeOptions: ["5", "10", "15", "20"],
-            showQuickJumper: true,
+            total: subjectList.total,
             showSizeChanger: true,
-            current: page, //当前页数
-            pageSize: limit, //每页条数
-            onChange: this.getSubjectList,
-            onShowSizeChange: this.getSubjectList,
+            showQuickJumper: true,
+            pageSizeOptions: ["5", "10", "15", "20"],
+            defaultPageSize: 10,
+            onChange: getSubjectList,
+            onShowSizeChange: getSubjectList,
           }}
         />
       </div>
     );
   }
 }
+
+export default Subject;

@@ -16,6 +16,49 @@ app.use((req, res, next) => {
   next();
 });
 
+// 使用解析POST/PUT请求的请求体参数的中间件
+app.use(express.json());
+
+app.post("/admin/edu/subject/save", (req, res, next) => {
+  // 默认express不解析请求体参数,需要使用中间件
+  const { title, parentId } = req.body;
+
+  console.log(title, parentId);
+
+  res.json({
+    code: 20000,
+    success: true,
+    data: { _id: Date.now(), title, parentId },
+    message: "",
+  });
+});
+
+app.get("/admin/edu/subject/get/:parentId", (req, res) => {
+  const { parentId } = req.params;
+  const total = Random.integer(0, 5);
+  const data = Mock.mock({
+    total,
+    [`items|${total}`]: [
+      {
+        "_id|+1": 100,
+        title: "@ctitle(2,5)",
+        parentId,
+      },
+    ],
+  });
+
+  if (total === 1) {
+    data.items = [data.items];
+  }
+
+  res.json({
+    code: 20000,
+    success: true,
+    data,
+    message: "",
+  });
+});
+
 app.get("/admin/edu/subject/:page/:limit", (req, res) => {
   const { page, limit } = req.params;
 
@@ -29,7 +72,6 @@ app.get("/admin/edu/subject/:page/:limit", (req, res) => {
       },
     ],
   });
-
   res.json({
     code: 20000,
     success: true,
@@ -40,8 +82,8 @@ app.get("/admin/edu/subject/:page/:limit", (req, res) => {
 
 app.listen(9527, "localhost", (err) => {
   if (err) {
-    console.log("服务器响应失败", err);
+    console.log("服务器启动失败", err);
     return;
   }
-  console.log("服务器启动成功");
+  console.log("服务器启动成功~");
 });
