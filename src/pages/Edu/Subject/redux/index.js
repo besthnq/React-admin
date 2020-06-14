@@ -1,5 +1,5 @@
 import subjectList from "./reducer";
 
-import { getSubjectList, getSubSubjectList } from "./actions";
+import { getSubjectList, getSubSubjectList, updateSubject } from "./actions";
 
-export { subjectList, getSubjectList, getSubSubjectList };
+export { subjectList, getSubjectList, getSubSubjectList, updateSubject };

@@ -7,10 +7,14 @@ import { connect } from "react-redux";
 import { getSubjectList } from "../../redux";
 import { reqAddSubject } from "@api/edu/subject";
 
+import "./index.less";
+
 const { Option } = Select;
 let page = 1;
 
 function AddSubject({ total, getSubjectList, history }) {
+  const [subjects, setSubjects] = useState([]);
+
   // 表单的布局属性
   const layout = {
     labelCol: { span: 2 },
@@ -24,10 +28,9 @@ function AddSubject({ total, getSubjectList, history }) {
     history.push("/edu/subject/list");
   };
 
-  const [subjects, setSubjects] = useState([]);
-
   // 工厂函数组件：发送请求请求数据
   useEffect(() => {
+   page = 1
     const fetchData = async () => {
       const items = await getSubjectList(page++, 10);
       setSubjects(items);
@@ -80,7 +83,9 @@ function AddSubject({ total, getSubjectList, history }) {
               </div>
             )}
           >
-            <Option>一级分类</Option>
+            <Option key={0} value="0">
+              一级分类
+            </Option>
             {subjects.map((subject, index) => {
               return (
                 <Option key={index + 1} value={subject._id}>
