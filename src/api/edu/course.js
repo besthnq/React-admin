@@ -18,6 +18,8 @@ export function reqGetCourseList({
   subjectId,
   subjectParentId,
   title,
+  sortBy,
+  sort,
 }) {
   return request({
     url: `${BASE_URL}/${page}/${limit}`,
@@ -27,6 +29,8 @@ export function reqGetCourseList({
       subjectId,
       subjectParentId,
       title,
+      sortBy,
+      sort,
     },
   });
 }

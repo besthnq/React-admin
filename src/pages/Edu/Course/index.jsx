@@ -10,7 +10,7 @@ import {
   RedoOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-
+import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import Search from "./components/Search";
 import { getCourseList } from "./redux";
@@ -31,13 +31,6 @@ class Course extends Component {
     limit: 5, // 每页显示条数
     previewVisible: false,
     previewImage: "",
-    searchData: {},
-  };
-
-  getSearchFormData = ({ teacherId, title, subjectId, subjectParentId }) => {
-    this.setState({
-      searchData: { teacherId, title, subjectId, subjectParentId },
-    });
   };
 
   search = (searchName) => {
@@ -223,8 +216,44 @@ class Course extends Component {
   };
 
   sortTable = (pagination, filters, sorter) => {
-    console.log(sorter);
+    const searchData = this.searchData;
+    const { page, limit } = this.state;
+    const { field, order } = sorter;
+    // console.log(sorter);
+
+    if (!searchData) {
+      message.warn("请先搜索~");
+      return;
+    }
+
+    const sort = order === "ascend" ? 1 : order === "descend" ? -1 : undefined;
+
+    this.props.getCourseList({
+      ...searchData,
+      page,
+      limit,
+      sortBy: field,
+      sort,
+    });
   };
+
+  getSearchFormData = (data) => {
+    /*
+      数据保存在state还是this上?
+        数据有没有直接涉及到当前组件更新
+          有 --> state
+          没有 --> this 优点：state数据少，将来优化时PureComponent内部遍历次数少~
+    */
+
+    // 更新状态属性
+    // this.setState({
+    //   data
+    // })
+    // 更新成this上的普通属性
+    this.searchData = data;
+  };
+
+  searchData = null;
 
   render() {
     const {
@@ -252,7 +281,9 @@ class Course extends Component {
 
         <div className="course-table">
           <div className="course-table-header">
-            <h3>课程数据列表</h3>
+            <h3>
+              <FormattedMessage id="courseList" />
+            </h3>
             <div>
               <Button type="primary" style={{ marginRight: 10 }}>
                 <PlusOutlined />
