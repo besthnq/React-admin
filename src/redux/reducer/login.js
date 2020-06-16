@@ -1,12 +1,12 @@
-import { LOGIN_SUCCESS, REMOVE_TOKEN } from "../constants/login";
+import { LOGIN, LOGOUT } from "../constants/login";
 
 const initToken = localStorage.getItem("user_token") || "";
 
 function token(prevState = initToken, action) {
   switch (action.type) {
-    case LOGIN_SUCCESS:
-      return action.data.token;
-    case REMOVE_TOKEN:
+    case LOGIN:
+      return action.data;
+    case LOGOUT:
       return "";
     default:
       return prevState;
