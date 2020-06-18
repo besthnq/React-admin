@@ -13,6 +13,7 @@ import { withRouter } from "react-router-dom";
 
 import { login, mobileLogin } from "@redux/actions/login";
 import { reqSendCode } from "@api/acl/oauth";
+import { CLIENT_ID } from "@conf/oauth";
 
 import "./index.less";
 
@@ -125,6 +126,11 @@ function LoginForm({ login, mobileLogin, history }) {
     }, 1000);
   };
 
+  // 第三方登录---github登录
+  const goGithub = () => {
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}`;
+  };
+
   return (
     <Form
       form={form}
@@ -211,7 +217,7 @@ function LoginForm({ login, mobileLogin, history }) {
           <Form.Item>
             <div className="login-form-icons">
               <span>其他登录方式</span>
-              <GithubOutlined className="icons" />
+              <GithubOutlined className="icons" onClick={goGithub} />
               <WechatOutlined className="icons" />
               <QqOutlined className="icons" />
             </div>
